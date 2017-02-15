@@ -315,7 +315,8 @@ module TinCanApi
       base_url = "#{base_url}:#{uri.port}" if uri.port
       @connection ||= Faraday.new(:url => base_url) do |faraday|
         faraday.request  :url_encoded             # form-encode POST params
-        faraday.response :logger                  # log requests to STDOUT
+        # log requests to Rails if available else to STDOUT
+        faraday.response :logger, begin Rails.logger rescue nil end
         faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
         faraday.headers['X-Experience-API-Version'] = version.to_s
         faraday.basic_auth(user_name, password)
